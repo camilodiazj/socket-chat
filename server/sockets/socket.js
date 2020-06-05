@@ -22,14 +22,21 @@ io.on('connection', (client) => {
 
         client.broadcast.to(data.room).emit('listaPersona', users.getPeoplePerRoom(data.room));
 
+        client.broadcast
+            .to(data.room)
+            .emit('crearMensaje', createMessage('Admin', `${data.name} is here!`));
+
         callback(users.getPeoplePerRoom(data.room));
     });
 
-    client.on('crearMensaje', (data) => {
+    client.on('crearMensaje', (data, callback) => {
 
         let person = users.getPerson(client.id);
         let message = createMessage(person.name, data.message);
-        client.broadcast.to(person.room).emit('crearMensaje', message);
+        client.broadcast
+            .to(person.room)
+            .emit('crearMensaje', message);
+        callback(message);
     });
 
     client.on('disconnect', () => {
